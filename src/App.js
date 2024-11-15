@@ -13,12 +13,13 @@ import UserProfile from './components/UserProfile';
 import LogIn from './components/Login';
 import Credits from './components/Credits';
 import Debits from './components/Debits';
+import axios from 'axios';
 
 class App extends Component {
-  constructor() {  // Create and initialize state
+  constructor() { 
     super(); 
     this.state = {
-      accountBalance: 1234567.89,
+      accountBalance: 0,
       creditList: [],
       debitList: [],
       currentUser: {
@@ -27,26 +28,49 @@ class App extends Component {
       }
     };
   }
-
-  // Update state's currentUser (userName) after "Log In" button is clicked
   mockLogIn = (logInInfo) => {  
     const newUser = {...this.state.currentUser};
     newUser.userName = logInInfo.userName;
     this.setState({currentUser: newUser})
+    this.componentDidMount()
   }
 
-  // Create Routes and React elements to be rendered using React components
+  async componentDidMount(){
+    let creditResp = await axios.get("https://johnnylaicode.github.io/api/credits.json");
+    let debitResp = await axios.get("https://johnnylaicode.github.io/api/debits.json");
+
+    let creditsTotal = 0;
+    let debitsTotal = 0;
+    if (creditResp && creditResp.data && debitResp && debitResp.data) {
+      creditsTotal = creditResp.data.reduce((total, credit) => total + credit.amount, 0);
+      debitsTotal = debitResp.data.reduce((total, debit) => total + debit.amount, 0);
+    }
+    this.setState({
+      creditList : creditResp.data,
+      debitList : debitResp.data,
+      accountBalance : parseFloat(creditsTotal, 10) - parseFloat(debitsTotal, 10)
+    })
+  }
+
+
+  addCredit = (creditData) => {
+    this.setState({
+      creditList: [...this.state.creditList, creditData]
+    })
+  }
+  addDebit = (debitData) => {
+    this.setState({
+      debitList: [...this.state.debitList, debitData]
+    })
+  }
   render() {  
-    // Create React elements and pass input props to components
     const HomeComponent = () => (<Home accountBalance={this.state.accountBalance} />)
     const UserProfileComponent = () => (
       <UserProfile userName={this.state.currentUser.userName} memberSince={this.state.currentUser.memberSince} />
     )
     const LogInComponent = () => (<LogIn user={this.state.currentUser} mockLogIn={this.mockLogIn} />)
-    const CreditsComponent = () => (<Credits credits={this.state.creditList} />) 
-    const DebitsComponent = () => (<Debits debits={this.state.debitList} />) 
-
-    // Important: Include the "basename" in Router, which is needed for deploying the React app to GitHub Pages
+    const CreditsComponent = () => (<Credits addCredit={this.addCredit} credits={this.state.creditList} accountBalance={this.state.accountBalance} />) 
+    const DebitsComponent = () => (<Debits debits={this.state.debitList} addDebits={this.addDebit} accountBalance={this.state.accountBalance} />) 
     return (
       <Router basename="/bank-of-react-starter-code">
         <div>
