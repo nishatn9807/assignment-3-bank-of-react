@@ -75,7 +75,7 @@ class App extends Component {
     const CreditsComponent = () => (<Credits addCredit={this.addCredit} credits={this.state.creditList} accountBalance={this.state.accountBalance} />) 
     const DebitsComponent = () => (<Debits debits={this.state.debitList} addDebit={this.addDebit} accountBalance={this.state.accountBalance} />) 
     return (
-      <Router basename="/bank-of-react-starter-code">
+      <Router basename="/assignment-3-bank-of-react">
         <div>
           <Route exact path="/" render={HomeComponent}/>
           <Route exact path="/userProfile" render={UserProfileComponent}/>
