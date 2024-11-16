@@ -57,11 +57,14 @@ class App extends Component {
     this.setState({
       creditList: [...this.state.creditList, creditData]
     })
+    this.setState({accountBalance: this.state.accountBalance + parseFloat(creditData.amount, 10)})
   }
   addDebit = (debitData) => {
     this.setState({
       debitList: [...this.state.debitList, debitData]
     })
+    this.setState({accountBalance: this.state.accountBalance - parseFloat(debitData.amount, 10)})
+  
   }
   render() {  
     const HomeComponent = () => (<Home accountBalance={this.state.accountBalance} />)
@@ -70,7 +73,7 @@ class App extends Component {
     )
     const LogInComponent = () => (<LogIn user={this.state.currentUser} mockLogIn={this.mockLogIn} />)
     const CreditsComponent = () => (<Credits addCredit={this.addCredit} credits={this.state.creditList} accountBalance={this.state.accountBalance} />) 
-    const DebitsComponent = () => (<Debits debits={this.state.debitList} addDebits={this.addDebit} accountBalance={this.state.accountBalance} />) 
+    const DebitsComponent = () => (<Debits debits={this.state.debitList} addDebit={this.addDebit} accountBalance={this.state.accountBalance} />) 
     return (
       <Router basename="/bank-of-react-starter-code">
         <div>
